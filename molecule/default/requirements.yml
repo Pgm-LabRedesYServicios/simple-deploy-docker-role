@@ -1,0 +1,4 @@
+- src: git+https://git.digitales.cslabrecha.org/ansible-roles/docker.git
+  version: v1.1.0
+- src: git+https://git.digitales.cslabrecha.org/ansible-roles/docker-registry.git
+  version: v1.0.0

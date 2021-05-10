@@ -1,0 +1,23 @@
+---
+- name: Build nginx from image
+  hosts: all
+  vars:
+    docker_image: nginx
+    service_name: image-nginx
+    docker_image_tag: latest
+    docker_command: /usr/bin/docker run --rm -i --name "{{ service_name }}" -p 8080:80 "{{ service_name }}"
+  roles:
+    - role: simple-deploy-docker
+
+- name: Build nginx from git
+  hosts: all
+  vars:
+    git_repository: https://github.com/nginxinc/docker-nginx
+    git_repository_destination: /tmp/docker-nginx
+    git_repository_extra_path: stable/stretch
+    git_repository_tag: master
+    service_name: git-nginx
+    docker_image_tag: latest
+    docker_command: /usr/bin/docker run --rm -i --name "{{ service_name }}" -p 8081:80 "{{ service_name }}"
+  roles:
+    - role: simple-deploy-docker

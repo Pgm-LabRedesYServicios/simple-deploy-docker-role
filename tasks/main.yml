@@ -1,0 +1,73 @@
+---
+- name: "[{{ service_name }}] Test if image exists"
+  become: True
+  command: docker inspect --type=image "{{ service_name }}:{{ docker_image_tag }}"
+  register: image_exists
+  changed_when: false
+  failed_when: false
+
+- name: "[{{ service_name }}] Clone git repository"
+  git:
+    repo: "{{ git_repository }}"
+    dest: "{{ git_repository_destination }}"
+    version: "{{ git_repository_tag }}"
+  when:
+    - docker_image is not defined
+    - not skip_git_clone
+    - image_exists.rc != '0'
+
+- name: "[{{ service_name }}] Build docker image and tag it to latest"
+  become: True
+  docker_image:
+    path: "{{ git_repository_destination }}/{{ git_repository_extra_path }}"
+    name: "{{ service_name }}"
+    tag: latest
+  when:
+    - docker_image is not defined
+    - image_exists.rc != 0
+
+- name: "[{{ service_name }}] Build docker image and tag it with a specified version"
+  become: True
+  docker_image:
+    path: "{{ git_repository_destination }}/{{ git_repository_extra_path }}"
+    name: "{{ service_name }}"
+    tag: "{{ docker_image_tag }}"
+  when:
+    - docker_image is not defined
+    - image_exists.rc != 0
+
+- name: "[{{ service_name }}] Download image remotely from public registry"
+  become: True
+  docker_image:
+    name: "{{ docker_image }}"
+    tag: "{{ docker_image_tag }}"
+  when:
+    - docker_image is defined
+    - image_exists.rc != 0
+
+- name: "[{{ service_name }}] Rename docker image to the service one"
+  become: True
+  command: "docker tag {{ docker_image }}:{{ docker_image_tag }} {{service_name }}:{{ docker_image_tag }}"
+  when:
+    - docker_image is defined
+    - image_exists.rc != 0
+
+- name: "[{{ service_name }}] Create systemd service"
+  become: True
+  template:
+    src: systemd-service.template
+    dest: "/etc/systemd/system/{{ service_name }}.service"
+    owner: root
+    group: root
+  when: create_service
+  notify:
+    - restart deployed service
+
+- name: "[{{ service_name }}] Enable systemd service and start it"
+  become: True
+  systemd:
+    name: "{{ service_name }}"
+    enabled: yes
+    daemon_reload: yes
+    state: started
+  when: create_service

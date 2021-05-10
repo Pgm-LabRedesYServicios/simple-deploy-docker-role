@@ -1,0 +1,36 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+lint:
+  name: yamllint
+platforms:
+  - name: deploy-docker-registry-instance-from-directory
+    box: debian/stretch64
+    instance_raw_config_args:
+      - "vm.synced_folder '.', '/vagrant', disabled: true"
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+scenario:
+  name: from_directory
+  test_sequence:
+    - destroy
+    - lint
+    - dependency
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - destroy
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

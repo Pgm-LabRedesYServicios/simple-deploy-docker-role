@@ -1,0 +1,9 @@
+- name: Converge
+  hosts: all
+  vars:
+    docker_registry: "{{ hostvars['ui-registry-registry-debian-stretch64'].ansible_default_ipv4.address }}:5000"
+    docker_registry_read: "{{ hostvars['ui-registry-registry-debian-stretch64'].ansible_default_ipv4.address }}:5000"
+    docker_command: /usr/bin/docker run --rm --name "{{ service_name }}" -i -p 127.0.0.1:8080:8080 "{{ docker_registry_read }}/{{ service_name }}" --registry "{{ docker_registry_read }}"
+  roles:
+    - role: ui-registry
+

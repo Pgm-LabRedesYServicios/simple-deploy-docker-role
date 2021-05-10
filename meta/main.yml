@@ -1,0 +1,10 @@
+galaxy_info:
+  author: lyz (lyz@riseup.net)
+  description: Deploy docker services.
+  min_ansible_version: 2.3
+  license: GPLv3
+
+  platforms:
+  - name: Debian
+    versions:
+    - stretch

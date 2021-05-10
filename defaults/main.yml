@@ -1,0 +1,9 @@
+git_repository:
+git_repository_destination:
+git_repository_extra_path:
+git_repository_tag:
+service_name:
+create_service: True
+skip_git_clone: False
+docker_command:
+docker_image_tag: "{{ git_repository_tag }}"

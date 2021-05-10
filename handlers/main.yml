@@ -1,0 +1,9 @@
+---
+# Handlers for simple-deploy-docker
+
+- name: "[{{ service_name }}] Restart deployed service"
+  listen: restart deployed service
+  become: true
+  service:
+    name: "{{ service_name }}"
+    state: restarted

@@ -1,0 +1,14 @@
+---
+- name: Build nginx from directory
+  hosts: all
+  vars:
+    skip_git_clone: True
+    git_repository_destination: /tmp/docker-nginx
+    git_repository_extra_path: stable/stretch
+    git_repository_tag: master
+    service_name: image-nginx
+    create_service: False
+    docker_image_tag: latest
+    docker_command: /usr/bin/docker run --rm -i --name "{{ service_name }}" -p 8080:80 "{{ service_name }}"
+  roles:
+    - role: simple-deploy-docker
